@@ -1,14 +1,23 @@
 <!-- Include the navbar partial -->
-<%- include ('partials/header', { isLoggedIn: isLoggedIn }) -%>
+<%- include ('partials/header', { isLoggedIn: isLoggedIn, isAdmin: isAdmin }) -%>
 
 <div class="container">
-  <div class="row justify-content-center">
-    <div class="col-lg-4 col-md-8 col-sm-10">
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-4 col-md-8 col-sm-10"> 
+      <h1>New User</h1>
       <div class="card mt-4"> <!-- Added "mt-4" class for top margin -->
         <div class="card-body">
           <div class="mb-3"> <!-- Added a wrapper with "mb-3" class -->
             <form method="post" action="<%= action %>">
               <input type="hidden" name="_method" value="<%= method %>">
+              <div class="form-group">
+                <label for="firstname">First Name</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" value="<%= user ? user.firstname : '' %>" required>
+              </div>
+              <div class="form-group">
+                <label for="lastname">Last Name</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" value="<%= user ? user.lastname : '' %>" required>
+              </div>
               <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" class="form-control" id="username" name="username" value="<%= user ? user.username : '' %>" required>
@@ -19,14 +28,22 @@
               </div>
               <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="password" name="password">
+              </div>
+              <div class="form-group"> <!-- Add the select field here -->
+                <label for="permission">Permission Level</label>
+                <select class="form-control" id="permission" name="permission" required>
+                  <option value="" disabled selected>Select one</option>
+                  <option value="general">General</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
               <div class="row align-items-center justify-content-between px-4">
                 <div class="mr-4">
                   <a href="/admin/users">Back</a>
                 </div>
                 
-                <button type="submit" class="btn btn-primary"><%= updateBtn %></button>
+                <button type="submit" class="btn btn-light"><%= updateBtn %></button>
               </div>
             </form>
             <% if (error && error.length > 0) { %>

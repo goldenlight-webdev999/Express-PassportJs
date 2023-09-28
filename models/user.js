@@ -7,7 +7,17 @@ require('dotenv').config(); // Load environment variables from .env file
 const UserSchema = new Schema({
   email_address: String,
   username: String,
-  password: String
+  password: String,
+  firstname: String,
+  lastname: String,
+  dateadded: {
+    type: Date,
+    default: Date.now 
+  },// This will automatically set the current date and time
+  permission: { 
+    type: String, 
+    default: 'general'
+  } 
 });
 
 UserSchema.pre('save', async function(next) {

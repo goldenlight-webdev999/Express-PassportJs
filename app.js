@@ -12,9 +12,12 @@ const bcrypt = require('bcrypt');
 const flash = require('connect-flash');
 const passport = require('passport');
 const mongoose = require('mongoose');
+require('./models/user');  // Ensure this line comes before you use the User model
 const XlsxPopulate = require('xlsx-populate');
 const { formatDate } = require('./public/js/custom');
 const pool = require('./db');
+const { spawn } = require('child_process');
+
 require('dotenv').config(); // Load environment variables from .env file
 
 // Set up static file serving
@@ -59,6 +62,10 @@ app.use(session({
   saveUninitialized: false
 }));
 
+// Initialize Passport and session
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(passport.authenticate('session'));
 app.use(function(req, res, next) {
   var msgs = req.session.messages || [];
@@ -67,10 +74,6 @@ app.use(function(req, res, next) {
   req.session.messages = [];
   next();
 });
-
-// Initialize Passport and session
-app.use(passport.initialize());
-app.use(passport.session());
 
 const storage = multer.memoryStorage(); // Store the uploaded file in memory
 const upload = multer({ storage: storage });
@@ -87,7 +90,10 @@ const authRouter = require('./routes/auth_router');
 const adminRouter = require('./routes/admin_router');
 const indexRouter = require('./routes/index_router')(pool, formatDataDate); // Pass the pool instance
 const pivotRouter = require('./routes/pivot_router')(pool);
+const locationRouter = require('./routes/locations_router')(pool);
+const jobcodesRouter = require('./routes/jobcodes_router')(pool);
 const uploadRouter = require('./routes/upload_router')(pool, storage, upload, formatDataDateForMySQL);
+
 
 // Use route modules
 app.use('/', indexRouter);
@@ -95,6 +101,8 @@ app.use('/', adminRouter);
 app.use('/', authRouter);
 app.use('/', pivotRouter);
 app.use('/', uploadRouter);
+app.use('/', locationRouter);
+app.use('/', jobcodesRouter);
 
 // Function to format date strings or Excel serial dates to MySQL date format (YYYY-MM-DD)
 // Function to format date strings or Excel serial dates to MySQL date format (YYYY-MM-DD)
@@ -175,6 +183,10 @@ function formatDataDateForMySQL(dateValue) {
     return null; // Return null for missing or invalid dates
   }
 }
+
+// Define your migration logic
+
+
 
 // Start the server
 const port = process.env.PORT || 8888;
